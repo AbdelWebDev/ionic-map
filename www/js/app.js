@@ -24,30 +24,31 @@ var example= angular.module('starter', ['ionic'])
 });
 
 
-//controller pour la localisation avec open street map
+//controller pour la féolocalisation avec open street map
+
 example.controller("OsmController",function($scope){
   map = new OpenLayers.Map("map");
   map.addLayer(new OpenLayers.Layer.OSM());
 
-  var lonLat = new OpenLayers.LonLat( 2.20000 ,48.5177286 )
-        .transform(
-          new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-          map.getProjectionObject() // to Spherical Mercator Projection
-        );
+  // fonction pour la géolocalisation
+  navigator.geolocation.getCurrentPosition(function(position) {
 
-  var zoom=6;
+       var lonLat = new OpenLayers.LonLat(position.coords.longitude,
+                               position.coords.latitude)
+                 .transform(
+                             new OpenLayers.Projection("EPSG:4326"), //ransformation de WGS à 1984
+                                         map.getProjectionObject() //à une projection sphérale
+                                       );
+
+       markers.addMarker(new OpenLayers.Marker(lonLat));
+
+       map.setCenter(lonLat, 16 // niveau de zoom
+       );
+
+   });
 
   var markers = new OpenLayers.Layer.Markers( "Markers" );
   map.addLayer(markers);
-
-  markers.addMarker(new OpenLayers.Marker(lonLat));
-
-  map.setCenter (lonLat, zoom);
-
-  /*navigator.geolocation.getCurrentPosition(function(pos){
-    map.setCenter(new OpenLayers.LonLat(pos.coords.latitude, pos.coords.longitude),zoom);
-  }); */
-
 
   $scope.map=map;
 });
