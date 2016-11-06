@@ -22,13 +22,46 @@ var example= angular.module('starter', ['ionic'])
     }
   });
 });
+
+
+//controller pour la localisation avec open street map
+example.controller("OsmController",function($scope){
+  map = new OpenLayers.Map("map");
+  map.addLayer(new OpenLayers.Layer.OSM());
+
+  var lonLat = new OpenLayers.LonLat( 2.20000 ,48.5177286 )
+        .transform(
+          new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+          map.getProjectionObject() // to Spherical Mercator Projection
+        );
+
+  var zoom=6;
+
+  var markers = new OpenLayers.Layer.Markers( "Markers" );
+  map.addLayer(markers);
+
+  markers.addMarker(new OpenLayers.Marker(lonLat));
+
+  map.setCenter (lonLat, zoom);
+
+  /*navigator.geolocation.getCurrentPosition(function(pos){
+    map.setCenter(new OpenLayers.LonLat(pos.coords.latitude, pos.coords.longitude),zoom);
+  }); */
+
+
+  $scope.map=map;
+});
+
+
+//cntrolleur pour la géolocalisation avec google map
+
 example.controller("MapController",function($scope){
   google.maps.event.addDomListener(window,"load", function(){
     var myLatLng = new google.maps.LatLng(37.000,-120.4833);
 
   var mapOptions={
     center:myLatLng,
-    zoom:16,
+    zoom:10,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
 
@@ -37,6 +70,7 @@ example.controller("MapController",function($scope){
   navigator.geolocation.getCurrentPosition(function(pos){
     map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
   });
+
 
   $scope.map=map;
 
